@@ -41,7 +41,7 @@ pip install -r requirements.txt
 python service.py &(optional)
 ``` 
 
-# Frontend installation guid
+# Frontend installation guide
 
 1. Install dependencies
 
@@ -55,6 +55,11 @@ npm install
 ``` bash
 npm run start
 ```
+
+Team members:
+- Dragarana Veselic
+- Petar Stojanovic
+- Ahmed Tuzinac
 
 
 
