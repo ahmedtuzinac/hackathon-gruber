@@ -148,7 +148,7 @@ async def send_message(payload: MessageSchema):
         f'partner language is {context["partner_language"]}'
         f'messages you already sent to them {context["direct_message"]}'
         f'messages that you received from them {partner_messages}'
-
+        )
     prompt: str = (
         'You are having a conversation with the partner, you are negotiating about job specifications,'
         f'This is a context from previous message: We(You) sent an offer:'
