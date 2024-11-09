@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 
 from config.application import service
 from models import Conversation
-from schemas import DispatchSchema
+from schemas import DispatchSchema, MessageSchema
 from utils import *
 
 router: APIRouter = APIRouter(
