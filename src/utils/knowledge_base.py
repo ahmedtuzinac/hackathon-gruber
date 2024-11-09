@@ -353,13 +353,17 @@ def main():
     with open('../../transport_history.json', 'r') as file:
         history = json.load(file)
 
+    suppliers_parts = []
     suppliers_string = """"""
-    for supplier in suppliers:
+
+    for idx, supplier in enumerate(suppliers):
         id_supplier = supplier['id']
         transports: list[dict] = get_transports_by_supplier(id_supplier, history)
 
         suppliers_string += f"""Partner, id={supplier['id']}, name={supplier['name']}, city={supplier['address']['city']}, country={supplier['address']['country']}, language={supplier['language']},transports={transports}\n"""
-
+        if idx % 5 == 0:
+            suppliers_parts.append(suppliers_string)
+            suppliers_string = """"""
 
     try:
         # Create custom retry configuration
@@ -385,18 +389,19 @@ def main():
         chatbot.set_system_prompt("""
         You are a chat bot for transport logistics,
         You discuss the price with partners,
-        adjust it based on their needs and ours,
-        and search for the best partners based on specified parameters.
-        You close deals.
+        You close a deals.
         """)
 
-        chatbot.add_knowledge(
-            suppliers_string
-        )
+        import time
+        for supplier_part in suppliers_parts:
+            chatbot.add_knowledge(
+                suppliers_parts
+            )
+            time.sleep(1)
 
         # Ask a question
         try:
-            response = chatbot.ask_question("Best partner for Barcelona-Belgrade?")
+            response = chatbot.ask_question("Best partner for Barcelona-Belgrade route and what is average price of this transport route?")
             print(f"Response: {response}")
         except AnthropicError as e:
             print(f"Failed after all attempts: {e}")
@@ -405,32 +410,6 @@ def main():
         print("\nAll contexts:")
         for ctx in chatbot.list_contexts():
             print(f"ID: {ctx['id']}, Name: {ctx['name']}, Created: {ctx['created_at']}")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-def main():
-    try:
-        # Initialize chatbot with retry configuration
-        retry_config = RetryConfig(max_retries=5, base_delay=1.0, max_delay=30.0, exponential_base=2.0, jitter=True)
-        chatbot = ContextualChatbot(api_key=api_key, retry_config=retry_config)
-
-        # List contexts to find an existing one
-        print("Available contexts:")
-        for ctx in chatbot.list_contexts():
-            print(f"ID: {ctx['id']}, Name: {ctx['name']}, Created: {ctx['created_at']}")
-
-        # Load a specific context by its ID
-        existing_context_id = '6794cfbc-5b9a-4a42-bb7c-a3dcf4a4755f'  # Replace with your actual context ID
-        if chatbot.load_context(existing_context_id):
-            print(f"Loaded context: {existing_context_id}")
-
-            # Ask a question using the loaded context
-            response = chatbot.ask_question("What is most rated suppliers?")
-            print(f"Response: {response}")
-        else:
-            print("Context not found or failed to load.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
