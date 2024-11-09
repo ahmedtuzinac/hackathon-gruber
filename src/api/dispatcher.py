@@ -112,6 +112,8 @@ async def start_an_order(payload: DispatchSchema):
 
 @router.patch('')
 async def send_message(payload: MessageSchema):
+
+
     conversation = await Conversation.filter(id=payload.id_conversation).get_or_none()
 
     if conversation.number_of_received_messages >= 5:
