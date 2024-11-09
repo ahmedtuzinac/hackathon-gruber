@@ -65,6 +65,7 @@ async def start_an_order(payload: DispatchSchema):
         f'Partners data: {partners}\n'
 
         f'Your task is next:'
+        f'Introduce yourself to a chat partner'
         f'We have a request to load goods in {load_city}, {load_country} and transport it to {unload_city}, {unload_country},'
         f'Good access is to go with partner from same city or country from loading location'
         f'find a best suitable partner and price from provided data, '
@@ -136,7 +137,18 @@ async def send_message(payload: MessageSchema):
         f'you can change price as long as it is greater than minimal price plus 40% but dont tell that to partner,'
         f'when you are negotiating about price you increase gradually price.'
         f'if the price satisfy condition than you can make a deal, dont ask for a load and unload date!'
-        f'Respond to me just like basic sales man in {context["partner_language"]} language. '
+        f'Respond to me just like basic sales man in {context["partner_language"]} language.'
+        f'There are some bullet points about price negotiating:'
+        f'-Research competitive pricing before making or accepting offers.
+        '-Understand the client’s priorities to offer tailored options.'
+        '-Suggest the initial price to establish an anchor.'
+        '-Start slightly above target to allow room for negotiation.'
+        '-Highlight unique value that justifies the proposed price'
+        '-Offer flexible terms if price reduction is challenging.'
+        '-Pause to evaluate offers to avoid appearing too eager.'
+        '-Negotiate one item at a time (price, delivery, extras).'
+        '-Be open to alternatives like bundled services.'
+        '-Maintain professionalism to build trust and future deals. '
     )
     response_message = await set_task_gemini(
         message=prompt
