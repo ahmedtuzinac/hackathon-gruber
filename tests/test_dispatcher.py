@@ -34,6 +34,7 @@ class TestTenderAIBot(TestBase):
             unload_address=AddressSchema(
                 city=unload_address['city'],
                 country=unload_address['country']
-            )
+            ),
+            price=2000.0
         )
         response = await self.api('POST', '/dispatcher', _body=schema.dict())

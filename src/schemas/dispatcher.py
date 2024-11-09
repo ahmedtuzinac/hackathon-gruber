@@ -8,5 +8,7 @@ class DispatchSchema(BaseModel):
     load_address: AddressSchema
     unload_address: AddressSchema
 
+    price: float
+
 
 
