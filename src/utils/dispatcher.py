@@ -28,6 +28,7 @@ async def get_partners():
         endpoint=url
     )
 
+
 async def get_transport_history():
     url = '/Transport/GetTransportHistory'
     return await get_data_from_base(
@@ -37,7 +38,7 @@ async def get_transport_history():
 
 async def set_task(message: str):
     client = anthropic.Anthropic(
-        api_key=os.getenv('api-key'),
+        api_key=os.getenv('ANTROPIC_API_KEY'),
     )
 
     message = client.messages.create(

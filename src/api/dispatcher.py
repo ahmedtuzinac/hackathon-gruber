@@ -115,13 +115,32 @@ async def start_an_order(payload: DispatchSchema):
 async def send_message(payload: MessageSchema):
     conversation = await Conversation.filter(id=payload.id_conversation).get_or_none()
 
+    if 'deal' and 'done' in payload.message.lower():
+        prompt = (
+            'You are having a conversation with the partner, you are negotiating about job specifications,'
+            f'This is a context from previous message: We(You) sent an offer:'
+            f'Context: {conversation.context},'
+            f'Consider previous messages sent by customer {conversation.context["partner_messages"]}'
+            f'Name of the choosen partner is: {conversation.context["partner_name"]}'
+            f'Write in this language: {conversation.context["partner_language"]}'
+            f'Please just close a real on a polite way positivly.'
+        )
+        response_message = await set_task_gemini(
+            message=prompt
+        )
+        return {
+            'message': response_message
+        }
+
     if conversation.number_of_received_messages >= 5:
         raise HTTPException(status_code=406, detail="I'am tired... Please just go away...")
 
     context = conversation.context
 
     partner_messages = context.get('partner_messages', [])
+    partner_messages.append(payload.message)
 
+<<<<<<< HEAD
     intro: str = (
         f'You are chating with partner, you are dispatcher at Gruber Logistics'
         f'You already sent him a offer message and i provide some data from that message to,'
@@ -129,6 +148,25 @@ async def send_message(payload: MessageSchema):
         f'partner language is {context["partner_language"]}'
         f'messages you already sent to them {context["direct_message"]}'
         f'messages that you received from them {partner_messages}'
+
+    prompt: str = (
+        'You are having a conversation with the partner, you are negotiating about job specifications,'
+        f'This is a context from previous message: We(You) sent an offer:'
+        f'Context: {conversation.context},'
+        f'Consider previous messages sent by customer {partner_messages}'
+        f'Name of the choosen partner is: {context["partner_name"]}'
+        f'Your task is next:'
+        f'partner sent next message to us: {partner_messages}'
+        f'If partner agrees on our price, dont send offers no more, dont change price, just send him a nice message about how pleasuare are you for working with them'
+        f'Keep the conversation with the partner, if he want to talk about price'
+        f'Never give a price that is greater than that one that partner offered.'
+        f'If the offered price is not fair dont go further in negotiating '
+        f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
+        f'you can change price as long as it is greater than minimal price plus 40% but dont tell that to partner,'
+        f'when you are negotiating about price you increase gradually price.'
+        f'if the price satisfy condition than you can make a deal, dont ask for a load and unload date!'
+        f'if partner agrees on our offer just close deal as positive and dont offer change price anymore!!!!'
+        f'Respond to me just like basic sales man in {context["partner_language"]} language. '
     )
     negotiate_prompt: str = (
         f'Those are some rules for negotiating:'
@@ -150,8 +188,6 @@ async def send_message(payload: MessageSchema):
         message=prompt
     )
 
-    partner_messages.append(payload.message)
-
     context['partner_messages'] = partner_messages
     context['direct_message'].append(response_message)
     conversation.context = context
@@ -162,4 +198,4 @@ async def send_message(payload: MessageSchema):
     }
 
 
-service.include_router(router, prefix='/dispatcher')
+service.include_router(router, prefix='/api/dispatcher')
