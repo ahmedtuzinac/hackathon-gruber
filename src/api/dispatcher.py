@@ -89,9 +89,12 @@ async def start_an_order(payload: DispatchSchema):
 
     context['partner_name'] = [response['partner_name']]
     context['minimal_price'] = response['minimal_price']
-    if context['minimal_price'] > payload.price:
-        payload.price = context['minimal_price']
 
+    try:
+        if float(context['minimal_price']) > payload.price:
+            payload.price = context['minimal_price']
+    except Exception as e:
+        ...
     context['target_price'] = payload.price
     del response['minimal_price']
     context['reason_why_you_choose_this_partner'] = [response['reason_why_you_choose_this_partner']]
