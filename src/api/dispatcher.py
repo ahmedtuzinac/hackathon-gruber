@@ -136,7 +136,7 @@ async def send_message(payload: MessageSchema):
         f'you can change price as long as it is greater than minimal price plus 40% but dont tell that to partner,'
         f'when you are negotiating about price you increase gradually price.'
         f'if the price satisfy condition than you can make a deal, dont ask for a load and unload date!'
-        f'if customer agrees on our offer just close deal as positive!'
+        f'if partner agrees on our offer just close deal as positive and dont offer change price anymore!!!!'
         f'Respond to me just like basic sales man in {context["partner_language"]} language. '
     )
     response_message = await set_task_gemini(
