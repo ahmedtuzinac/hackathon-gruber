@@ -140,7 +140,7 @@ async def send_message(payload: MessageSchema):
     partner_messages = context.get('partner_messages', [])
     partner_messages.append(payload.message)
 
-<<<<<<< HEAD
+
     intro: str = (
         f'You are chating with partner, you are dispatcher at Gruber Logistics'
         f'You already sent him a offer message and i provide some data from that message to,'
