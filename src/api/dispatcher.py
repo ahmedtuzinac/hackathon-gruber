@@ -126,7 +126,7 @@ async def send_message(payload: MessageSchema):
         f'If the offered price is not fair like 1.5 times greated than target price dont go further in negotiating '
         f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
         f'you can change price as long as it is greater than minimal price plus 40%'
-        f'if the price satisfy condition than you can make a deal!'
+        f'if the price satisfy condition than you can make a deal, dont ask for a load and unload date!'
         f'Respond to me just like basic sales man in {context["partner_language"]} language. '
     )
     response_message = await set_task_gemini(
