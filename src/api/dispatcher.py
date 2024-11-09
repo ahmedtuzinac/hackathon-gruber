@@ -121,6 +121,7 @@ async def send_message(payload: MessageSchema):
             f'Context: {conversation.context},'
             f'Consider previous messages sent by customer {conversation.context["partner_messages"]}'
             f'Name of the choosen partner is: {conversation.context["partner_name"]}'
+            f'Write in this language: {conversation.context["partner_language"]}'
             f'Please just close a real on a polite way positivly.'
         )
         response_message = await set_task_gemini(
