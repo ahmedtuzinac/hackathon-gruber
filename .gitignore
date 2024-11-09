@@ -1,3 +1,5 @@
+frontend/dist/**
+
 .idea
 .env
 .pytest_cache
