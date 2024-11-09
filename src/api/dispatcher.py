@@ -16,12 +16,12 @@ async def get_cities():
     return await get_available_cities()
 
 
-    def extract_json(response):
-        response = response.replace('\n', '')
+def extract_json(response):
+    response = response.replace('\n', '')
 
-        json_start = response.index("{")
-        json_end = response.rfind("}")
-        return json.loads(response[json_start:json_end + 1])
+    json_start = response.index("{")
+    json_end = response.rfind("}")
+    return json.loads(response[json_start:json_end + 1])
 
 
 @router.post('')
