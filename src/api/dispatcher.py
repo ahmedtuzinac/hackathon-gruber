@@ -114,13 +114,21 @@ async def start_an_order(payload: DispatchSchema):
 async def send_message(payload: MessageSchema):
     conversation = await Conversation.filter(id=payload.id_conversation).get_or_none()
 
-    # if 'deal' and 'done' in payload.message.lower():
-    #     prompt = (
-    #         ''
-    #     )
-    #     response_message = await set_task_gemini(
-    #         message=prompt
-    #     )
+    if 'deal' and 'done' in payload.message.lower():
+        prompt = (
+            'You are having a conversation with the partner, you are negotiating about job specifications,'
+            f'This is a context from previous message: We(You) sent an offer:'
+            f'Context: {conversation.context},'
+            f'Consider previous messages sent by customer {conversation.context["partner_messages"]}'
+            f'Name of the choosen partner is: {conversation.context["partner_name"]}'
+            f'Please just close a real on a polite way positivly.'
+        )
+        response_message = await set_task_gemini(
+            message=prompt
+        )
+        return {
+            'messsage': response_message
+        }
 
     if conversation.number_of_received_messages >= 5:
         raise HTTPException(status_code=406, detail="I'am tired... Please just go away...")
@@ -152,7 +160,6 @@ async def send_message(payload: MessageSchema):
     response_message = await set_task_gemini(
         message=prompt
     )
-
 
     context['partner_messages'] = partner_messages
     context['direct_message'].append(response_message)
