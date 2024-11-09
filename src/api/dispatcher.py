@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 
 from config.application import service
@@ -12,6 +14,14 @@ router: APIRouter = APIRouter(
 @router.get('/cities')
 async def get_cities():
     return await get_available_cities()
+
+
+    def extract_json(response):
+        response = response.replace('\n', '')
+
+        json_start = response.index("{")
+        json_end = response.rfind("}")
+        return json.loads(response[json_start:json_end + 1])
 
 
 @router.post('')
@@ -69,36 +79,10 @@ async def start_an_order(payload: DispatchSchema):
     response_message = await set_task_gemini(
         message=prompt
     )
-    # response_message = await set_task(
-    #     message=prompt
-    # )
 
-    import json
-    try:
-        try:
-            import json
 
-            def extract_json(response):
-                response = response.replace('\n', '')
-
-                json_start = response.index("{")
-                json_end = response.rfind("}")
-                return json.loads(response[json_start:json_end + 1])
-
-            response = extract_json(response_message)
-            return response
-
-        except json.JSONDecodeError as e:
-            print("Error parsing JSON:", e)
-            raise e
-    except Exception as e:
-        ...
-        raise
-    return {
-        'partner_name': parsed_data['parner_name'],
-        'reason': parsed_data['reason'],
-        'direct_message': parsed_data['direct_message']
-    }
+    response = extract_json(response_message)
+    return response
 
 
 service.include_router(router, prefix='/dispatcher')
