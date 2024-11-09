@@ -59,7 +59,7 @@ async def start_an_order(payload: DispatchSchema):
             ]
         }
 
-    response_format: str = '{"partner_name": "...", "reason_why_you_choose_this_partner": "...", "minimal_price": "...", "direct_message": "..."}'
+    response_format: str = '{"partner_name": "...", "reason_why_you_choose_this_partner": "...", "minimal_price": "...", "direct_message": "...", "partner_language"}'
     prompt: str = (
         'You are a dispatcher for logistics company "Gruber Logistics"'
         f'Partners data: {partners}\n'
@@ -76,6 +76,7 @@ async def start_an_order(payload: DispatchSchema):
         f'reason_why_you_choose_this_partner(describe by which params you choosed partner),'
         f'minimal_price(minimal price for a job, do not display it)'
         f'direct_message(direct message to a partner in native language of the partner, which contains job offer set a price of job to be {payload.price} Euros)'
+        f'partner_language(language of the partner)'
         f'Please give an output in JSON format({response_format})'
     )
     response_message = await set_task_gemini(
@@ -92,6 +93,7 @@ async def start_an_order(payload: DispatchSchema):
     del response['minimal_price']
     context['reason_why_you_choose_this_partner'] = [response['reason_why_you_choose_this_partner']]
     context['direct_message'] = [response['direct_message']]
+    context['partner_language'] = response['partner_language']
 
     conversation: Conversation = await Conversation.create(
         context=context
@@ -119,7 +121,7 @@ async def send_message(payload: MessageSchema):
         f'Keep the conversation with the partner, if he want to correct the price'
         f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
         f'you can change price as long as it is greater than minimal price plus 40%'
-        f'Respond to me just like basic sales man'
+        f'Respond to me just like basic sales man in {context["partner_language"]} language. '
     )
     response_message = await set_task_gemini(
         message=prompt
