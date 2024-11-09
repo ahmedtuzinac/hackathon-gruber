@@ -119,6 +119,7 @@ async def send_message(payload: MessageSchema):
         f'Name of the choosen partner is: {context["partner_name"]}'
         f'Your task is next:'
         f'Keep the conversation with the partner, if he want to correct the price'
+        f'If the offered price is not fair like 1.5 times greated than target price dont go further in negotiating '
         f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
         f'you can change price as long as it is greater than minimal price plus 40%'
         f'Respond to me just like basic sales man in {context["partner_language"]} language. '
