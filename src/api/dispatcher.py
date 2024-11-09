@@ -122,6 +122,7 @@ async def send_message(payload: MessageSchema):
         f'Name of the choosen partner is: {context["partner_name"]}'
         f'Your task is next:'
         f'Keep the conversation with the partner, if he want to correct the price'
+        f'partner sent next message to us: {payload.message}'
         f'If the offered price is not fair like 1.5 times greated than target price dont go further in negotiating '
         f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
         f'you can change price as long as it is greater than minimal price plus 40%'
@@ -132,7 +133,7 @@ async def send_message(payload: MessageSchema):
         message=prompt
     )
 
-    partner_messages.append(message)
+    partner_messages.append(payload.message)
 
     context['partner_messages'] = partner_messages
     context['direct_message'].append(response_message)
