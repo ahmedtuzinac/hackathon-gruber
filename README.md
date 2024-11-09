@@ -62,4 +62,6 @@ Team members:
 - Ahmed Tuzinac
 
 
+Project is deployed at https://hackathon2024.digitalcube.dev
+
 
