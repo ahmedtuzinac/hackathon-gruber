@@ -128,7 +128,7 @@ async def send_message(payload: MessageSchema):
             message=prompt
         )
         return {
-            'messsage': response_message
+            'message': response_message
         }
 
     if conversation.number_of_received_messages >= 5:
