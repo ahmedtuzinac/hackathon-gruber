@@ -38,3 +38,16 @@ class TestTenderAIBot(TestBase):
             price=2000.0
         )
         response = await self.api('POST', '/dispatcher', _body=schema.dict())
+
+        id_conversation = response.json()['id_conversation']
+
+        async with httpx.AsyncClient(app=self.app, base_url='http://test') as client:
+            response = await client.patch(
+                '/dispatcher',
+                json={
+                    'id_conversation': id_conversation,
+                    'message': 'Can we go a little bit lower with price?'
+                }
+            )
+        ...
+

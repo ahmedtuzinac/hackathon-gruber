@@ -74,8 +74,8 @@ async def start_an_order(payload: DispatchSchema):
         f'You have to give thus answers '
         f'partner_name(name of the choosen partner),'
         f'reason_why_you_choose_this_partner(describe by which params you choosed partner),'
-        f'minimal_price(minimal price for a job)'
-        f'direct_message(direct message to a partner in native language of the partner, which contains job offer)'
+        f'minimal_price(minimal price for a job, do not display it)'
+        f'direct_message(direct message to a partner in native language of the partner, which contains job offer set a price of job to be {payload.price} Euros)'
         f'Please give an output in JSON format({response_format})'
     )
     response_message = await set_task_gemini(
@@ -86,10 +86,12 @@ async def start_an_order(payload: DispatchSchema):
 
     context = dict()
 
-    context['partner_name'] = response['partner_name']
-    context['minimal_price'] = response['minimal_price']
-    context['reason_why_you_choose_this_partner'] = response['reason_why_you_choose_this_partner']
-    context['direct_message'] = response['direct_message']
+    context['partner_name'] = [response['partner_name']]
+    context['minimal_price'] = [response['minimal_price']]
+    context['target_price'] = payload.price
+    del response['minimal_price']
+    context['reason_why_you_choose_this_partner'] = [response['reason_why_you_choose_this_partner']]
+    context['direct_message'] = [response['direct_message']]
 
     conversation: Conversation = await Conversation.create(
         context=context
@@ -101,14 +103,35 @@ async def start_an_order(payload: DispatchSchema):
 
 @router.patch('')
 async def send_message(payload: MessageSchema):
-    conversation = await Conversation.filter(id=id_conversation).get_or_none()
+    conversation = await Conversation.filter(id=payload.id_conversation).get_or_none()
 
     if conversation.number_of_received_messages >= 5:
         raise HTTPException(status_code=406, detail="I'am tired... Please just go away...")
 
     context = conversation.context
 
+    prompt: str = (
+        'You are having a conversation with the partner, you are negotiating about job specifications,'
+        f'This is a context from previous message: We(You) sent an offer:'
+        f'Context: {conversation.context}'
+        f'Name of the choosen partner is: {context["partner_name"]}'
+        f'Your task is next:'
+        f'Keep the conversation with the partner, if he want to correct the price'
+        f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
+        f'you can change price as long as it is greater than minimal price plus 40%'
+        f'Respond to me just like basic sales man'
+    )
+    response_message = await set_task_gemini(
+        message=prompt
+    )
 
+    context['direct_message'].append(response_message)
+    conversation.context = context
+    await conversation.save()
+
+    return {
+        'message': response_message
+    }
 
 
 service.include_router(router, prefix='/dispatcher')
