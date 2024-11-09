@@ -132,6 +132,8 @@ async def send_message(payload: MessageSchema):
     )
     negotiate_prompt: str = (
         f'Those are some rules for negotiating:'
+        f' - Most important is to try to negotiate like a human being, you cannot specify why are you doing what you are doing!'
+        f' - Be precise!'
         f' - Ideal Price: The price you’d prefer to achieve in our case is {context["target_price"]} Euros.'
         f' - Minimum Price: The lowest acceptable price in our case is {context["minimal_price"]}'
         f' - Starting Offer: Set as slightly above your ideal price, allowing room for negotiation.'
