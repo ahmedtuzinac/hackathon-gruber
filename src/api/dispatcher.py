@@ -66,6 +66,7 @@ async def start_an_order(payload: DispatchSchema):
 
         f'Your task is next:'
         f'We have a request to load goods in {load_city}, {load_country} and transport it to {unload_city}, {unload_country},'
+        f'Good access is to go with partner from same city or country from loading location'
         f'find a best suitable partner and price from provided data, '
         f'you have a history of every partner their longitude and latitude and other specific data, '
         f'do the calculations which partner will give a best possible results. '
@@ -129,6 +130,7 @@ async def send_message(payload: MessageSchema):
         f'Your task is next:'
         f'partner sent next message to us: {payload.message}'
         f'Keep the conversation with the partner, if he want to talk about price'
+        f'Never give a price that is greater than that one that partner offered.'
         f'If the offered price is not fair dont go further in negotiating '
         f'you have minimal price: {context["minimal_price"]} and target price: {context["target_price"]},'
         f'you can change price as long as it is greater than minimal price plus 40% but dont tell that to partner,'
