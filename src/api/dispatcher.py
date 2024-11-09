@@ -51,14 +51,36 @@ async def start_an_order(payload: DispatchSchema):
         f'do the calculations which partner will give a best possible results. '
         f'Also you have to make a direct message to a partner in their language and offer them the job. Price is provided to you, '
         f'but you can calculate minimum price with 5% profit on this job.'
-        f'Respond to me in json format: {response_format}'
+        f'Respond to me just in json format: {response_format}'
     )
     response_message = await set_task_gemini(
         message=prompt
     )
 
+    import json
+    try:
+        try:
+            import json
+            # Remove any leading/trailing whitespace and parse JSON
+            message = message.replace('json', '')
+            message = message.replace('`', '')
+            parsed_data = json.loads(message.strip())
+
+            # Now you can access the data as a dictionary
+            print("Partner Name:", parsed_data['partner_name'])
+            print("Reason:", parsed_data['reason'])
+            print("Minimum Price:", parsed_data['minimum_price'])
+            print("Direct Message:", parsed_data['direct_message'])
+
+        except json.JSONDecodeError as e:
+            print("Error parsing JSON:", e)
+    except Exception as e:
+        ...
+        raise
     return {
-        'work_in_progres': True
+        'partner_name': parsed_data['parner_name'],
+        'reason': parsed_data['reason'],
+        'direct_message': parsed_data['direct_message']
     }
 
 
