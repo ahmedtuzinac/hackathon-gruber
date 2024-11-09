@@ -114,6 +114,14 @@ async def start_an_order(payload: DispatchSchema):
 async def send_message(payload: MessageSchema):
     conversation = await Conversation.filter(id=payload.id_conversation).get_or_none()
 
+    # if 'deal' and 'done' in payload.message.lower():
+    #     prompt = (
+    #         ''
+    #     )
+    #     response_message = await set_task_gemini(
+    #         message=prompt
+    #     )
+
     if conversation.number_of_received_messages >= 5:
         raise HTTPException(status_code=406, detail="I'am tired... Please just go away...")
 
@@ -156,4 +164,4 @@ async def send_message(payload: MessageSchema):
     }
 
 
-service.include_router(router, prefix='/api/dispatcher')
+service.include_router(router, prefix='/dispatcher')
