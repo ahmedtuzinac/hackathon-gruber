@@ -100,13 +100,15 @@ async def start_an_order(payload: DispatchSchema):
 
 
 @router.patch('')
-async def send_message(id_conversation: uuid.UUID, message: str):
+async def send_message(payload: MessageSchema):
     conversation = await Conversation.filter(id=id_conversation).get_or_none()
 
     if conversation.number_of_received_messages >= 5:
         raise HTTPException(status_code=406, detail="I'am tired... Please just go away...")
 
     context = conversation.context
+
+
 
 
 service.include_router(router, prefix='/dispatcher')
