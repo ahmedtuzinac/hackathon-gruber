@@ -88,7 +88,10 @@ async def start_an_order(payload: DispatchSchema):
     context = dict()
 
     context['partner_name'] = [response['partner_name']]
-    context['minimal_price'] = [response['minimal_price']]
+    context['minimal_price'] = response['minimal_price']
+    if context['minimal_price'] > payload.price:
+        payload.price = context['minimal_price']
+
     context['target_price'] = payload.price
     del response['minimal_price']
     context['reason_why_you_choose_this_partner'] = [response['reason_why_you_choose_this_partner']]
