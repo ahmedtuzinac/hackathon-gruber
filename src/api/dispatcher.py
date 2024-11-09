@@ -156,4 +156,4 @@ async def send_message(payload: MessageSchema):
     }
 
 
-service.include_router(router, prefix='/dispatcher')
+service.include_router(router, prefix='/api/dispatcher')
