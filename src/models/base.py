@@ -1,4 +1,5 @@
 from tortoise import fields
+from tortoise.models import Model
 
 
 class Base:
@@ -11,5 +12,9 @@ class Base:
     last_updated = fields.DatetimeField(auto_now_add=True)
 
 
-class Conversation(Base):
-    ...
+class Conversation(Base, Model):
+    context = fields.JSONField(null=True)
+    number_of_received_messages = fields.IntField(default=0)
+
+    class Meta:
+        table = 'conversations'

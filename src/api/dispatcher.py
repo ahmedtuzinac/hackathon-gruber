@@ -1,10 +1,12 @@
 import json
+import uuid
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from config.application import service
-from utils import *
+from models import Conversation
 from schemas import DispatchSchema
+from utils import *
 
 router: APIRouter = APIRouter(
     tags=['DispatcherBot API']
@@ -59,7 +61,7 @@ async def start_an_order(payload: DispatchSchema):
 
     response_format: str = '{"partner_name": "...", "reason_why_you_choose_this_partner": "...", "minimal_price": "...", "direct_message": "..."}'
     prompt: str = (
-        'You are a dispatcher for logistics company, '
+        'You are a dispatcher for logistics company "Gruber Logistics"'
         f'Partners data: {partners}\n'
 
         f'Your task is next:'
@@ -80,9 +82,31 @@ async def start_an_order(payload: DispatchSchema):
         message=prompt
     )
 
-
     response = extract_json(response_message)
+
+    context = dict()
+
+    context['partner_name'] = response['partner_name']
+    context['minimal_price'] = response['minimal_price']
+    context['reason_why_you_choose_this_partner'] = response['reason_why_you_choose_this_partner']
+    context['direct_message'] = response['direct_message']
+
+    conversation: Conversation = await Conversation.create(
+        context=context
+    )
+
+    response['id_conversation'] = conversation.id
     return response
+
+
+@router.patch('')
+async def send_message(id_conversation: uuid.UUID, message: str):
+    conversation = await Conversation.filter(id=id_conversation).get_or_none()
+
+    if conversation.number_of_received_messages >= 5:
+        raise HTTPException(status_code=406, detail="I'am tired... Please just go away...")
+
+    context = conversation.context
 
 
 service.include_router(router, prefix='/dispatcher')
