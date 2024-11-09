@@ -120,6 +120,7 @@ async def send_message(payload: MessageSchema):
     context = conversation.context
 
     partner_messages = context.get('partner_messages', [])
+    partner_messages.append(payload.message)
 
     prompt: str = (
         'You are having a conversation with the partner, you are negotiating about job specifications,'
@@ -128,7 +129,7 @@ async def send_message(payload: MessageSchema):
         f'Consider previous messages sent by customer {partner_messages}'
         f'Name of the choosen partner is: {context["partner_name"]}'
         f'Your task is next:'
-        f'partner sent next message to us: {payload.message}'
+        f'partner sent next message to us: {partner_messages}'
         f'If partner agrees on out offer dont send offers no more, dont change price, just accept and close a deal positive!'
         f'Keep the conversation with the partner, if he want to talk about price'
         f'Never give a price that is greater than that one that partner offered.'
@@ -144,7 +145,6 @@ async def send_message(payload: MessageSchema):
         message=prompt
     )
 
-    partner_messages.append(payload.message)
 
     context['partner_messages'] = partner_messages
     context['direct_message'].append(response_message)
