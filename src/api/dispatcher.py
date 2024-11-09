@@ -139,16 +139,16 @@ async def send_message(payload: MessageSchema):
         f'if the price satisfy condition than you can make a deal, dont ask for a load and unload date!'
         f'Respond to me just like basic sales man in {context["partner_language"]} language.'
         f'There are some bullet points about price negotiating:'
-        f'-Research competitive pricing before making or accepting offers.
-        '-Understand the client’s priorities to offer tailored options.'
-        '-Suggest the initial price to establish an anchor.'
-        '-Start slightly above target to allow room for negotiation.'
-        '-Highlight unique value that justifies the proposed price'
-        '-Offer flexible terms if price reduction is challenging.'
-        '-Pause to evaluate offers to avoid appearing too eager.'
-        '-Negotiate one item at a time (price, delivery, extras).'
-        '-Be open to alternatives like bundled services.'
-        '-Maintain professionalism to build trust and future deals. '
+        f'-Research competitive pricing before making or accepting offers.'
+        ' - Understand the client’s priorities to offer tailored options.'
+        ' - Suggest the initial price to establish an anchor.'
+        ' - Start slightly above target to allow room for negotiation.'
+        ' - Highlight unique value that justifies the proposed price'
+        ' - Offer flexible terms if price reduction is challenging.'
+        ' - Pause to evaluate offers to avoid appearing too eager.'
+        ' - Negotiate one item at a time (price, delivery, extras).'
+        ' - Be open to alternatives like bundled services.'
+        ' - Maintain professionalism to build trust and future deals. '
     )
     response_message = await set_task_gemini(
         message=prompt
