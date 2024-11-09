@@ -1,0 +1,701 @@
+<div *ngIf="isMobile; else desktopContent">
+  <div class="header" style="justify-content: center;">
+    <div class="logo">
+      <img src="/logo3.png" alt="Logo" class="logo" />
+    </div>
+  </div>
+  <div *ngIf="isChatStarted; else startChatForm" class="terminal-container">
+    <div class="side-content">
+      <div class="sidebar-header">
+        <h3>Chatbot log</h3>
+        <button mat-icon-button (click)="sidenav.toggle()" class="toggle-btn">
+        </button>
+      </div>
+      <!-- Terminal-style content explaining chatbot's answers -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-title">Terminal - Chatbot</div>
+        </div>
+        <div class="terminal-content">
+          <p><strong>Explanation:</strong> {{ displayedTerminalMessage }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #startChatForm>
+    <div class="side-content">
+      <div class="sidebar-header">
+        <h3>Start chat</h3>
+        <button mat-icon-button (click)="sidenav.toggle()" class="toggle-btn">
+        </button>
+      </div>
+      <div class="sidebar-title">
+        Enter shipment details to get fast, AI-powered transport solutions
+      </div>
+
+      <div class="sidebar-subtitle">
+        To start chat bot, provide your shipment details below to and get
+        real-time assistance from our virtual dispatcher.
+      </div>
+      <!-- Loading Locations -->
+      <div class="form">
+        <!-- Loading Location Section -->
+        <mat-form-field appearance="outline">
+          <mat-label>Loading Location</mat-label>
+          <input
+            type="text"
+            matInput
+            [matAutocomplete]="auto"
+            [(ngModel)]="selectedLoadingLocation"
+            (input)="filterLocations($event, 'loading')"
+            required
+          />
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option
+              *ngFor="let location of filteredLoadingLocations"
+              [value]="location.city"
+            >
+              {{ location.city }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-icon matSuffix>location_on</mat-icon>
+        </mat-form-field>
+
+        <!-- Loading Date and Time -->
+        <div class="delivery-datetime" style="flex-direction: column; gap: 0;">
+          <!-- Delivery Date for Loading -->
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Loading Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="loadingDatePicker"
+              [(ngModel)]="selectedLoadingDate"
+              placeholder="Select loading date"
+              required
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="loadingDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #loadingDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Delivery Time for Loading -->
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Loading Time</mat-label>
+            <mat-select
+              placeholder="Select loading time"
+              [(ngModel)]="selectedLoadingTime"
+              class="with-custom-icon"
+              required
+            >
+              <mat-option *ngFor="let time of deliveryTimes" [value]="time">{{
+                time
+              }}</mat-option>
+            </mat-select>
+            <mat-icon class="custom-icon">access_time</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Unloading Location Section -->
+        <mat-form-field appearance="outline">
+          <mat-label>Unloading Location</mat-label>
+          <input
+            type="text"
+            matInput
+            [matAutocomplete]="autoUnloading"
+            [(ngModel)]="selectedUnloadingLocation"
+            (input)="filterLocations($event, 'unloading')"
+            required
+          />
+          <mat-autocomplete #autoUnloading="matAutocomplete">
+            <mat-option
+              *ngFor="let location of filteredUnloadingLocations"
+              [value]="location.city"
+            >
+              {{ location.city }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-icon matSuffix>location_on</mat-icon>
+        </mat-form-field>
+
+        <!-- Unloading Date and Time -->
+        <div class="delivery-datetime" style="flex-direction: column; gap: 0;">
+          <!-- Delivery Date for Unloading -->
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Unloading Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="unloadingDatePicker"
+              [(ngModel)]="selectedUnloadingDate"
+              placeholder="Select unloading date"
+              required
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="unloadingDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #unloadingDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Delivery Time for Unloading -->
+          <mat-form-field appearance="outline" class="time-field">
+            <mat-label>Unloading Time</mat-label>
+            <mat-select
+              placeholder="Select unloading time"
+              [(ngModel)]="selectedUnloadingTime"
+              class="with-custom-icon"
+              required
+            >
+              <mat-option *ngFor="let time of deliveryTimes" [value]="time">{{
+                time
+              }}</mat-option>
+            </mat-select>
+            <mat-icon class="custom-icon">access_time</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Price -->
+        <mat-form-field appearance="outline">
+          <mat-label>Price</mat-label>
+          <input
+            matInput
+            [(ngModel)]="selectedPrice"
+            placeholder="Enter price"
+            required
+          />
+          <mat-icon matSuffix>euro_symbol</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="button-container">
+        <button
+          mat-raised-button
+          color="primary"
+          class="button"
+          (click)="onSubmit()"
+          [disabled]="!isFormValid()"
+          [ngClass]="{ disabled: !isFormValid() }"
+        >
+          Start chat
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <div *ngIf="!isChatStarted; else chatBot" class="content-container">
+    <div class="content-wrapper">
+
+      <!-- Chatbot in Main Content -->
+      <div class="main-content-info loading" *ngIf="isLoading">
+        <div>
+          <div class="loading-container">
+            <div class="loading-text">Finding the best solution...</div>
+            <mat-spinner diameter="50"></mat-spinner>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content-info" *ngIf="!isLoading">
+        <div class="title-container">
+          <!-- <h2 class="title">Chatbot</h2> -->
+          <div class="chatbot-info">
+            <div class="icon-container">
+              <mat-icon>local_shipping</mat-icon>
+            </div>
+            <div class="info">
+              <div class="title">
+                Optimize Your Shipment Tendering with Our AI-Powered
+                Dispatcher
+              </div>
+              <div class="subtitle">
+                This conversation is between you and GRUBER LOGISTICS
+              </div>
+            </div>
+          </div>
+          <div class="content">
+            Our AI bot will analyze your criteria, review supplier
+            performance, and communicate with the best available suppliers
+            across Europe in their native language. Streamline your transport
+            arrangements and reduce manual effort for faster, reliable
+            solutions.
+          </div>
+
+          <div class="chat-box">
+            <div class="chat-message typing-indicator">
+              <div class="message bot">
+                <div class="message-box mobile">
+                  <div class="bot">
+                    <img src="/avatar.png" alt="Avatar" width="40" />
+                  </div>
+                  <div>
+                    Hello, I am Emily! Your virtual dispatcher. I am here to assist with arranging transport. Just let me know your shipment details, and I’ll find the best available suppliers to meet your needs. I can help with vehicle availability, pricing, and any specific requirements you have. How can I assist you today?
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #chatBot>
+    <div class="content-wrapper">
+
+      <!-- Chatbot in Main Content -->
+      <div class="main-content">
+        <div class="title-container">
+          <!-- <h2 class="title">Chatbot</h2> -->
+          <div class="chatbot-info">
+            <div class="icon-container">
+              <mat-icon>local_shipping</mat-icon>
+            </div>
+            <div class="info">
+              <div class="title">
+                Optimize Your Shipment Tendering with Our AI-Powered
+                Dispatcher
+              </div>
+              <div class="subtitle">
+                This conversation is between you and GRUBER LOGISTICS
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-container" #chatContainer>
+          <div class="chat-box">
+            <div class="chat-message typing-indicator">
+              <div class="message bot">
+                <div class="message-box mobile">
+                  <div class="bot">
+                    <img src="/avatar.png" alt="Avatar" width="40" />
+                  </div>
+                  <div>
+                    {{ displayedChatbotMessage }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngFor="let msg of messages" class="chat-box">
+            <div class="chat-message" [ngClass]="{'user-message': msg.sender === 'user', 'bot-message': msg.sender === 'bot'}">
+              <div class="message">
+                <div class="message-box">
+                  <div *ngIf="msg.sender === 'bot'" class="bot">
+                    <img src="/avatar.png" alt="Avatar" width="40"/>
+                  </div>
+                  <div class="text">
+                    {{ msg.text }}
+                  </div>
+                  <div *ngIf="msg.sender === 'user'" class="user">
+                    <img src="/generic_avatar.svg" alt="Avatar" width="40"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="chat-input-container mobile"
+            [ngClass]="isSidenavOpened() ? 'sidebar-open' : ''"
+          >
+            <div class="chat-input">
+              <input
+                class="custom-input"
+                type="text"
+                placeholder="Type a message"
+                [(ngModel)]="userMessage"
+                (keyup.enter)="onSendMessage()"
+              />
+              <button
+                class="microphone-button"
+                mat-icon-button
+                color="primary"
+              >
+                <mat-icon class="message-icon">mic</mat-icon>
+              </button>
+              <button
+                class="send-button"
+                mat-icon-button
+                color="primary"
+                (click)="onSendMessage()"
+              >
+                <mat-icon class="message-icon">send</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  
+</div>
+<ng-template #desktopContent>
+  <div class="header">
+    <div class="logo">
+      <img src="/logo3.png" alt="Logo" class="logo" />
+    </div>
+    <div class="language">
+      <mat-form-field appearance="outline">
+        <mat-label>Language</mat-label>
+        <mat-select
+          [(value)]="selectedLanguage"
+          (selectionChange)="onLanguageChange($event)"
+          class="with-custom-icon"
+        >
+          <mat-option *ngFor="let language of languages" [value]="language.code">
+            {{ language.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon class="custom-icon">language</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+  <mat-sidenav-container>
+    <mat-sidenav #sidenav mode="side" [opened]="true">
+      <div *ngIf="isChatStarted; else startChatForm" class="terminal-container">
+        <div class="side-content">
+          <div class="sidebar-header">
+            <h3>Chatbot log</h3>
+            <button mat-icon-button (click)="sidenav.toggle()" class="toggle-btn">
+              <mat-icon>keyboard_double_arrow_left</mat-icon>
+            </button>
+          </div>
+          <!-- Terminal-style content explaining chatbot's answers -->
+          <div class="terminal">
+            <div class="terminal-header">
+              <div class="terminal-title">Terminal - Chatbot</div>
+            </div>
+            <div class="terminal-content">
+              <p><strong>Explanation:</strong> {{ displayedTerminalMessage }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #startChatForm>
+        <div class="side-content">
+          <div class="sidebar-header">
+            <h3>Start chat</h3>
+            <button mat-icon-button (click)="sidenav.toggle()" class="toggle-btn">
+              <mat-icon>keyboard_double_arrow_left</mat-icon>
+            </button>
+          </div>
+          <div class="sidebar-title">
+            Enter shipment details to get fast, AI-powered transport solutions
+          </div>
+  
+          <div class="sidebar-subtitle">
+            To start chat bot, provide your shipment details below to and get
+            real-time assistance from our virtual dispatcher.
+          </div>
+          <!-- Loading Locations -->
+          <div class="form">
+            <!-- Loading Location Section -->
+            <mat-form-field appearance="outline">
+              <mat-label>Loading Location</mat-label>
+              <input
+                type="text"
+                matInput
+                [matAutocomplete]="auto"
+                [(ngModel)]="selectedLoadingLocation"
+                (input)="filterLocations($event, 'loading')"
+                required
+              />
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option
+                  *ngFor="let location of filteredLoadingLocations"
+                  [value]="location.city"
+                >
+                  {{ location.city }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+  
+            <!-- Loading Date and Time -->
+            <div class="delivery-datetime">
+              <!-- Delivery Date for Loading -->
+              <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Loading Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="loadingDatePicker"
+                  [(ngModel)]="selectedLoadingDate"
+                  placeholder="Select loading date"
+                  required
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="loadingDatePicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #loadingDatePicker></mat-datepicker>
+              </mat-form-field>
+  
+              <!-- Delivery Time for Loading -->
+              <mat-form-field appearance="outline" class="time-field">
+                <mat-label>Loading Time</mat-label>
+                <mat-select
+                  placeholder="Select loading time"
+                  [(ngModel)]="selectedLoadingTime"
+                  class="with-custom-icon"
+                  required
+                >
+                  <mat-option *ngFor="let time of deliveryTimes" [value]="time">{{
+                    time
+                  }}</mat-option>
+                </mat-select>
+                <mat-icon class="custom-icon">access_time</mat-icon>
+              </mat-form-field>
+            </div>
+  
+            <!-- Unloading Location Section -->
+            <mat-form-field appearance="outline">
+              <mat-label>Unloading Location</mat-label>
+              <input
+                type="text"
+                matInput
+                [matAutocomplete]="autoUnloading"
+                [(ngModel)]="selectedUnloadingLocation"
+                (input)="filterLocations($event, 'unloading')"
+                required
+              />
+              <mat-autocomplete #autoUnloading="matAutocomplete">
+                <mat-option
+                  *ngFor="let location of filteredUnloadingLocations"
+                  [value]="location.city"
+                >
+                  {{ location.city }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+  
+            <!-- Unloading Date and Time -->
+            <div class="delivery-datetime">
+              <!-- Delivery Date for Unloading -->
+              <mat-form-field appearance="outline" class="date-field">
+                <mat-label>Unloading Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="unloadingDatePicker"
+                  [(ngModel)]="selectedUnloadingDate"
+                  placeholder="Select unloading date"
+                  required
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="unloadingDatePicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #unloadingDatePicker></mat-datepicker>
+              </mat-form-field>
+  
+              <!-- Delivery Time for Unloading -->
+              <mat-form-field appearance="outline" class="time-field">
+                <mat-label>Unloading Time</mat-label>
+                <mat-select
+                  placeholder="Select unloading time"
+                  [(ngModel)]="selectedUnloadingTime"
+                  class="with-custom-icon"
+                  required
+                >
+                  <mat-option *ngFor="let time of deliveryTimes" [value]="time">{{
+                    time
+                  }}</mat-option>
+                </mat-select>
+                <mat-icon class="custom-icon">access_time</mat-icon>
+              </mat-form-field>
+            </div>
+  
+            <!-- Price -->
+            <mat-form-field appearance="outline">
+              <mat-label>Price</mat-label>
+              <input
+                matInput
+                [(ngModel)]="selectedPrice"
+                placeholder="Enter price"
+                required
+              />
+              <mat-icon matSuffix>euro_symbol</mat-icon>
+            </mat-form-field>
+          </div>
+  
+          <div class="button-container">
+            <button
+              mat-raised-button
+              color="primary"
+              class="button"
+              (click)="onSubmit()"
+              [disabled]="!isFormValid()"
+              [ngClass]="{ disabled: !isFormValid() }"
+            >
+              Start chat
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </mat-sidenav>
+  
+    <mat-sidenav-content>
+      <div *ngIf="!isChatStarted; else chatBot" class="content-container">
+        <div class="content-wrapper">
+          <button
+            *ngIf="!sidenav.opened"
+            mat-icon-button
+            (click)="sidenav.toggle()"
+            class="show-sidebar-btn"
+          >
+            <mat-icon>keyboard_double_arrow_right</mat-icon>
+          </button>
+  
+          <!-- Chatbot in Main Content -->
+          <div class="main-content-info loading" *ngIf="isLoading">
+            <div>
+              <div class="loading-container">
+                <div class="loading-text">Finding the best solution...</div>
+                <mat-spinner diameter="50"></mat-spinner>
+              </div>
+            </div>
+          </div>
+  
+          <div class="main-content-info" *ngIf="!isLoading">
+            <div class="title-container">
+              <!-- <h2 class="title">Chatbot</h2> -->
+              <div class="chatbot-info">
+                <div class="icon-container">
+                  <mat-icon>local_shipping</mat-icon>
+                </div>
+                <div class="info">
+                  <div class="title">
+                    Optimize Your Shipment Tendering with Our AI-Powered
+                    Dispatcher
+                  </div>
+                  <div class="subtitle">
+                    This conversation is between you and GRUBER LOGISTICS
+                  </div>
+                </div>
+              </div>
+              <div class="content">
+                Our AI bot will analyze your criteria, review supplier
+                performance, and communicate with the best available suppliers
+                across Europe in their native language. Streamline your transport
+                arrangements and reduce manual effort for faster, reliable
+                solutions.
+              </div>
+  
+              <div class="chat-box">
+                <div class="chat-message typing-indicator">
+                  <div class="message bot">
+                    <div class="message-box">
+                      <div class="bot">
+                        <img src="/avatar.png" alt="Avatar" width="40" />
+                      </div>
+                      <div>
+                        Hello, I am Emily! Your virtual dispatcher. I am here to assist with arranging transport. Just let me know your shipment details, and I’ll find the best available suppliers to meet your needs. I can help with vehicle availability, pricing, and any specific requirements you have. How can I assist you today?
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #chatBot>
+        <div class="content-wrapper">
+          <button
+            *ngIf="!sidenav.opened"
+            mat-icon-button
+            (click)="sidenav.toggle()"
+            class="show-sidebar-btn"
+          >
+            <mat-icon>keyboard_double_arrow_right</mat-icon>
+          </button>
+  
+          <!-- Chatbot in Main Content -->
+          <div class="main-content">
+            <div class="title-container">
+              <!-- <h2 class="title">Chatbot</h2> -->
+              <div class="chatbot-info">
+                <div class="icon-container">
+                  <mat-icon>local_shipping</mat-icon>
+                </div>
+                <div class="info">
+                  <div class="title">
+                    Optimize Your Shipment Tendering with Our AI-Powered
+                    Dispatcher
+                  </div>
+                  <div class="subtitle">
+                    This conversation is between you and GRUBER LOGISTICS
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-container" #chatContainer>
+              <div class="chat-box">
+                <div class="chat-message typing-indicator">
+                  <div class="message bot">
+                    <div class="message-box">
+                      <div class="bot">
+                        <img src="/avatar.png" alt="Avatar" width="40" />
+                      </div>
+                      <div>
+                        {{ displayedChatbotMessage }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngFor="let msg of messages" class="chat-box">
+                <div class="chat-message" [ngClass]="{'user-message': msg.sender === 'user', 'bot-message': msg.sender === 'bot'}">
+                  <div class="message">
+                    <div class="message-box">
+                      <div *ngIf="msg.sender === 'bot'" class="bot">
+                        <img src="/avatar.png" alt="Avatar" width="40"/>
+                      </div>
+                      <div class="text">
+                        {{ msg.text }}
+                      </div>
+                      <div *ngIf="msg.sender === 'user'" class="user">
+                        <img src="/generic_avatar.svg" alt="Avatar" width="40"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div
+                class="chat-input-container"
+                [ngClass]="isSidenavOpened() ? 'sidebar-open' : ''"
+              >
+                <div class="chat-input">
+                  <input
+                    class="custom-input"
+                    type="text"
+                    placeholder="Type a message"
+                    [(ngModel)]="userMessage"
+                    (keyup.enter)="onSendMessage()"
+                  />
+                  <button
+                    class="microphone-button"
+                    mat-icon-button
+                    color="primary"
+                  >
+                    <mat-icon class="message-icon">mic</mat-icon>
+                  </button>
+                  <button
+                    class="send-button"
+                    mat-icon-button
+                    color="primary"
+                    (click)="onSendMessage()"
+                  >
+                    <mat-icon class="message-icon">send</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+</ng-template>

@@ -1,0 +1,16 @@
+{
+    "/api": {
+      "target": "",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    },
+  
+    "/dispatcher": {
+      "target": "",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
+  

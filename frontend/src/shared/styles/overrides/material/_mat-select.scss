@@ -1,0 +1,24 @@
+.mat-mdc-form-field-infix {
+    display: flex;
+    .mat-mdc-select.with-custom-icon {
+        
+        .mat-mdc-select-trigger {
+    
+            .mat-mdc-select-arrow-wrapper {
+                visibility: hidden;
+            }
+        }
+    }
+    
+    .custom-icon {
+        position: absolute;
+        right: 0;
+        padding-right: 1px;
+    }
+}
+
+.mat-mdc-form-field-type-mat-select {
+    .mat-mdc-text-field-wrapper {
+        padding: 0px 12px 0px 16px !important;
+    }
+}

@@ -1,0 +1,24 @@
+/* Invalid field styling */
+.mat-form-field.ng-invalid.ng-touched .mat-input-element {
+  border-color: red;
+}
+
+.mat-form-field.ng-valid.ng-touched .mat-input-element {
+  border-color: green;
+}
+
+.mat-label {
+    z-index: 1000;
+}
+
+.mat-mdc-form-field-has-icon-prefix .mat-mdc-text-field-wrapper {
+    padding-left: 1rem !important;
+}
+
+.mat-mdc-select-arrow svg {
+  left: 0 !important;
+}
+
+::ng-deep .mat-form-field input {
+  height: 50px; /* Adjust the height as needed */
+}

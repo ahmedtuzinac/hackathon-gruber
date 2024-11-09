@@ -1,0 +1,56 @@
+/* Centering the login container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* Styling the login content */
+.login-content {
+  text-align: center;
+  padding: 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Logo styling */
+.logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+form {
+  padding: 0 20px;
+}
+
+/* Form field styling */
+.form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+/* Forgot password link styling */
+.forgot-password {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.forgot-password a {
+  color: green;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* Button styling */
+.login-btn {
+  width: 100%;
+}

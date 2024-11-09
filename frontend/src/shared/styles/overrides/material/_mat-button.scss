@@ -1,0 +1,13 @@
+.mdc-button {
+  border-radius: 5px !important;
+  background-color: #006A6A !important;
+
+  .mdc-button__label {
+    color: white;
+  }
+}
+
+.button.disabled {
+  background-color: #BCC9C9 !important;
+  color: black !important;
+}
