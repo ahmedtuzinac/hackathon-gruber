@@ -129,6 +129,7 @@ async def send_message(payload: MessageSchema):
         f'Name of the choosen partner is: {context["partner_name"]}'
         f'Your task is next:'
         f'partner sent next message to us: {payload.message}'
+        f'If partner agrees on out offer dont send offers no more, dont change price, just accept and close a deal positive!'
         f'Keep the conversation with the partner, if he want to talk about price'
         f'Never give a price that is greater than that one that partner offered.'
         f'If the offered price is not fair dont go further in negotiating '
